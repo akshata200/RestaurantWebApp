@@ -1,0 +1,8 @@
+2. To create Component
+	ng g c ComponentName
+
+3. To create Service
+	ng g s ServiceName
+
+4. To Generate class
+	ng g cl ClassName --type=model

@@ -1,0 +1,35 @@
+1. Install mentioned packages (Version 6.0.5 for .Net 6)
+	Install-Package Microsoft.EntityFrameworkCore.SqlServer
+	Install-Package Microsoft.VisualStudio.Web.CodeGeneration.Design
+	Install-Package Microsoft.EntityFrameworkCore.Tools
+
+
+
+
+2.For creating DB model class:
+	Scaffold-DbContext “Server={database servername}; Database={Database Name};Trusted_Connection=True;” Microsoft.EntityFrameworkCore.SqlServer -OutputDir Models
+
+	Scaffold-DbContext “Server=LAPTOP-R4ETUOPL\SQLEXPRESS; Database=RestaurantDB;Trusted_Connection=True;” Microsoft.EntityFrameworkCore.SqlServer -OutputDir Models
+
+
+3. Add Connection string in appSettings.json
+
+“ConnectionStrings”:{
+ “DefaultConnection” : “Server={database servername}; Database={Database Name};Trusted_Connection=True;”
+}
+
+“ConnectionStrings”:{
+ “DefaultConnection” : “Server=LAPTOP-R4ETUOPL\SQLEXPRESS; Database=RestaurantDB;Trusted_Connection=True;”
+}
+
+4. Run the following code in your  package manager console :
+	add-migration initial
+
+5. in Program.cs, add below code. Its providing connection string for Custom DBContext
+
+builder.Services.AddDbContext<RestaurantDBContext>(options =>
+{
+    options.UseSqlServer(builder.Configuration.GetConnectionString("Default"));
+});
+
+6. Then edit Controller as per need
