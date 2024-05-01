@@ -20,7 +20,7 @@ namespace RestaurantWebApp.Controllers
 
         // GET: api/<CustomerController>
         [HttpGet]
-        public async Task<IActionResult> GetCustomers()
+        public IActionResult GetCustomers()
         {
             try
             {

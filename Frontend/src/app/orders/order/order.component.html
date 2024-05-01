@@ -1,1 +1,73 @@
-<p>order works!</p>
+<form class ="my-6" #form="ngForm" autocomplete="off" *ngIf="service.formData" (submit)="onSubmit(form)">
+    <div class="row">
+        <div class="col-md-6 mx-auto p-2">
+            <div class="form-group p-2">
+                <label>Order Number</label>
+                <div class="input-group my-2">
+                    <div class="input-group-prepend">
+                        <div class="input-group-text">#</div>
+                    </div>
+                <input #OrderNo="ngModel" readonly name="OrderNo" [(ngModel)]="service.formData.OrderNo" class="form-control" style="background-color :rgba(248, 248, 248, 0.842);">
+                </div>
+            </div>
+            <div class="form-group p-2">
+                <label>Customer</label>
+                <select #CustomerID="ngModel" name="CustomerID" [(ngModel)]="service.formData.CustomerId" class="form-control my-2" [class.is-invalid]="!isValid && service.formData.CustomerId==0">
+                    <option value="0">-select-</option>
+                    <option *ngFor="let customer of allCustomer" value="{{customer.customerId}}">{{customer.name}}</option>
+                </select>
+            </div>
+        </div>
+        <div class="col-md-6 mx-auto p-2">
+            <div class="form-group p-2">
+                <label>Payment Method</label>
+                <select #PaymentMethod="ngModel" name="PaymentMethod" [(ngModel)]="service.formData.PaymentMethod" class="form-control my-2" [class.is-invalid]="!isValid && service.formData.PaymentMethod == ''">
+                    <option value="">-select-</option>
+                    <option value="Cash">Cash</option>
+                    <option vlaue="Card">Card</option>
+                </select>
+            </div>
+            <div class="form-group p-2">
+                <label>Grand Total</label>
+                <div class="input-group my-2">
+                    <div class="input-group-prepend">
+                        <div class="input-group-text">$</div>
+                    </div>
+                <input #GrandTotal="ngModel" readonly name="GrandTotal" [(ngModel)]="service.formData.GrandTotal" class="form-control" style="background-color :rgba(248, 248, 248, 0.842);">
+                </div>
+            </div>
+        </div>
+            <table class="table ms-6 mx-2 text-center bg-light">
+                <thead>
+                    <th>Food Item</th>
+                    <th>Price</th>
+                    <th>Quantity</th>
+                    <th>Total</th>
+                    <th>
+                        <a class="btn btn-sm my-2 text-bg-dark" (click)="AddOrEditOrderItem(null,service.formData.OrderId)"><i class="fa fa-plus"></i> Add</a>
+                    </th>
+                </thead>
+                <tbody class="p-4">
+                    <tr class="my-2 p-2" *ngIf="service.orderItems.length == 0" [class.text-danger]="!isValid && service.orderItems.length == 0">
+                        <td class="font-italic text-center mx-6" colspan="5">No items to display</td>
+                    </tr>
+                    <tr class="my-2" *ngFor="let items of service.orderItems; let i=index">
+                        <td>{{items.ItemName}}</td>
+                        <td>{{items.Price}}</td>
+                        <td>{{items.Quantity}}</td>
+                        <td>{{items.Total}}</td>
+                        <td>
+                            <a class="btn btn-sm btn-warning text-center text-bg-dark" (click)="AddOrEditOrderItem(i,service.formData.OrderId)"><i class="fa fa-pencil"></i></a>
+                            <a class="btn btn-sm btn-danger text-bg-dark mx-2" (click)="onDeleteOrderItem(items.OrderItemId,i)"><i class="fa fa-trash"></i></a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        
+        <div class="form-group p-4">
+            <button type="submit" class="btn btn-dark"><i class="fa-solid fa-server"></i>Submit</button>
+            <a class="btn btn-outline-dark mx-2" routerLink="/orders"><i class="fa fa-plus-table"></i> View Orders</a>
+        </div>
+    </div>
+</form>
+

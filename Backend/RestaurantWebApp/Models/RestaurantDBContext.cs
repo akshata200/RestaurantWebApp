@@ -14,6 +14,7 @@ namespace RestaurantWebApp.Models
         public RestaurantDBContext(DbContextOptions<RestaurantDBContext> options)
             : base(options)
         {
+
         }
 
         public virtual DbSet<Customer> Customers { get; set; } = null!;

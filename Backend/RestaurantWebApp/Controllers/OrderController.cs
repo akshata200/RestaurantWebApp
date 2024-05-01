@@ -22,13 +22,20 @@ namespace RestaurantWebApp.Controllers
 
         // GET: api/Order
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Order>>> GetOrders()
+        public System.Object GetOrders()
         {
-          if (_context.Orders == null)
-          {
-              return NotFound();
-          }
-            return await _context.Orders.ToListAsync();
+            var result = (from o in _context.Orders
+                          join c in _context.Customers
+                          on o.CustomerId equals c.CustomerId
+                          select new
+                          {
+                              o.OrderId,
+                              o.OrderNo,
+                              customer = c.Name,
+                              o.PaymentMethod,
+                              o.GrandTotal
+                          }).ToList();
+            return result;
         }
 
         // GET: api/Order/5
@@ -81,18 +88,33 @@ namespace RestaurantWebApp.Controllers
         }
 
         // POST: api/Order
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
         public async Task<ActionResult<Order>> PostOrder(Order order)
         {
-          if (_context.Orders == null)
-          {
-              return Problem("Entity set 'RestaurantDBContext.Orders'  is null.");
-          }
-            _context.Orders.Add(order);
-            await _context.SaveChangesAsync();
+            try
+            {
+                if (_context.Orders == null)
+                {
+                    return BadRequest("Entity set 'RestaurantDBContext.Orders'  is null.");
+                }
+                Console.WriteLine(order);
+                //save data in orders table
+                _context.Orders.Add(order);
 
-            return CreatedAtAction("GetOrder", new { id = order.OrderId }, order);
+                // save data in OrderItems table
+                foreach(var item in order.OrderItems)
+                {
+                    _context.OrderItems.Add(item);
+                }
+
+                await _context.SaveChangesAsync();
+
+                //return CreatedAtAction("GetOrder", new { id = order.OrderId }, order);
+                return Ok();
+            }catch(Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         // DELETE: api/Order/5

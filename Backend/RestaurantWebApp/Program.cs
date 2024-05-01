@@ -16,6 +16,13 @@ builder.Services.AddDbContext<RestaurantDBContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("Default"));
 });
 
+// CORS
+builder.Services.AddCors(policy => policy.AddPolicy("crosPolicy", build =>
+{
+    build.WithOrigins("http://localhost:4200").AllowAnyMethod().AllowAnyHeader();
+}));
+
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -24,6 +31,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseCors("crosPolicy");
 
 app.UseHttpsRedirection();
 

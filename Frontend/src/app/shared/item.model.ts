@@ -1,5 +1,5 @@
 export class Item {
-    ItemId! : number;
-    Name! : string;
-    Price! : number;
+    itemId! : number;
+    name! : string;
+    price! : number;
 }

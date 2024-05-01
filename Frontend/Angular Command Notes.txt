@@ -6,3 +6,9 @@
 
 4. To Generate class
 	ng g cl ClassName --type=model
+
+
+npm i toastr
+npm i ngx-toastr@15.2.2
+
+If you make changes outside SRC folder, please run : ng serve --o
