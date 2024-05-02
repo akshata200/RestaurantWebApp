@@ -1,7 +1,8 @@
 export class Order {
-    OrderId! : number;
-    OrderNo! : string;
-    CustomerId! : number
-    PaymentMethod! : string;
-    GrandTotal! : number;
+    orderId! : number;
+    orderNo! : string;
+    customerId! : number
+    paymentMethod! : string;
+    grandTotal! : number;
+    DeletedOrderItems! : string;
 }

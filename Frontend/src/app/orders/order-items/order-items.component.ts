@@ -35,13 +35,13 @@ export class OrderItemsComponent implements OnInit{
 
     if(this.data.orderItemIndex == null){
       this.formData = {
-        OrderItemId: 0,
-        OrderId : this.data.OrderID,
-        ItemId : 0,
-        ItemName : '',
-        Price : 0,
-        Quantity : 0,
-        Total : 0
+        orderItemId: 0,
+        orderId : this.data.OrderID,
+        itemId : 0,
+        itemName : '',
+        price : 0,
+        quantity : 0,
+        total : 0
       }
       }else{
         this.formData = Object.assign({},this.orderService.orderItems[this.data.orderItemIndex]);
@@ -52,23 +52,23 @@ export class OrderItemsComponent implements OnInit{
 
   updatePrice(event : any){
     if(event.selectedIndex == 0){
-      this.formData.Price = 0;
-      this.formData.ItemName = '';
+      this.formData.price = 0;
+      this.formData.itemName = '';
       this.updateTotal();
       console.log(this.formData)
     }else{
       this.itemList.forEach(value =>{
         this.allItems = value as Item[];
         this.item = this.allItems[event.selectedIndex-1]
-        this.formData.Price = this.item.price;
-        this.formData.ItemName = this.item.name;
+        this.formData.price = this.item.price;
+        this.formData.itemName = this.item.name;
         this.updateTotal();
       })
     }
   }
 
   updateTotal(){
-    this.formData.Total = parseFloat((this.formData.Quantity * this.formData.Price).toFixed(2));
+    this.formData.total = parseFloat((this.formData.quantity * this.formData.price).toFixed(2));
   }
 
   onSubmit(form : NgForm){
@@ -77,15 +77,16 @@ export class OrderItemsComponent implements OnInit{
         this.orderService.orderItems.push(form.value)
       else
         this.orderService.orderItems[this.data.orderItemIndex] = form.value
+      console.log(form.value)
       this.dialougeRef.close();
     } 
   }
 
   validateForm(form : OrderItem){
     this.isValid = true;
-    if(form.Quantity == 0)
+    if(form.quantity == 0)
       this.isValid = false
-    else if(form.ItemId == 0)
+    else if(form.itemId == 0)
       this.isValid = false
     return this.isValid
   }

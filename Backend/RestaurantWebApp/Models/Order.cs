@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace RestaurantWebApp.Models
 {
@@ -15,6 +16,9 @@ namespace RestaurantWebApp.Models
         public int? CustomerId { get; set; }
         public string? PaymentMethod { get; set; }
         public decimal? GrandTotal { get; set; }
+
+        [NotMapped]
+        public string DeletedOrderItems { get; set; }
 
         public virtual Customer? Customer { get; set; }
         public virtual ICollection<OrderItem> OrderItems { get; set; }

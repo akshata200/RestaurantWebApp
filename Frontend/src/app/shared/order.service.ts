@@ -18,6 +18,7 @@ export class OrderService {
       ...this.formData,
       OrderItems : this.orderItems
     }
+    console.log("For Post Request")
     console.log(body)
     var url = 'https://localhost:44339/api/Order'
     return this.http.post(url,body)
@@ -29,5 +30,14 @@ export class OrderService {
     return this.http.get(url)
   }
 
+  getOrderById(orderId : number) : any{
+    var url = 'https://localhost:44339/api/Order/'+orderId;
+    return this.http.get(url);
+  }
+
+  onDelete(orderId : number){
+    var url = 'https://localhost:44339/api/Order/'+orderId;
+    return this.http.delete(url);
+  }
 
 }

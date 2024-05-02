@@ -33,7 +33,8 @@ namespace RestaurantWebApp.Controllers
                               o.OrderNo,
                               customer = c.Name,
                               o.PaymentMethod,
-                              o.GrandTotal
+                              o.GrandTotal,
+                              DeletedOrderItems=""
                           }).ToList();
             return result;
         }
@@ -42,18 +43,34 @@ namespace RestaurantWebApp.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Order>> GetOrder(long id)
         {
-          if (_context.Orders == null)
-          {
-              return NotFound();
-          }
-            var order = await _context.Orders.FindAsync(id);
 
-            if (order == null)
-            {
-                return NotFound();
-            }
+            var order = (from a in _context.Orders
+                         where a.OrderId == id
+                         select new
+                         {
+                             OrderId = a.OrderId,
+                             OrderNo = a.OrderNo,
+                             CustomerId =a.CustomerId,
+                             PaymentMethod = a.PaymentMethod,
+                             GrandTotal = a.GrandTotal,
+                             DeletedOrderItems = ""
+                         }).FirstOrDefault();
 
-            return order;
+            var OrderItems = (from a in _context.OrderItems
+                              join b in _context.Items on a.ItemId equals b.ItemId
+                              where a.OrderId == id
+                              select new
+                              {
+                                  a.OrderItemId,
+                                  a.OrderId,
+                                  b.ItemId,
+                                  a.Quantity,
+                                  ItemName = b.Name,
+                                  b.Price,
+                                  Total = a.Quantity * b.Price
+                              }).ToList();
+
+            return Ok(new { order, OrderItems});
         }
 
         // PUT: api/Order/5
@@ -99,13 +116,39 @@ namespace RestaurantWebApp.Controllers
                 }
                 Console.WriteLine(order);
                 //save data in orders table
-                _context.Orders.Add(order);
-
+                if(order == null || order.OrderId==0)
+                {
+                    // add new record
+                    _context.Orders.Add(order);
+                }
+                else
+                {
+                    // update existing record
+                    _context.Entry(order).State= EntityState.Modified;
+                }
+                
                 // save data in OrderItems table
                 foreach(var item in order.OrderItems)
                 {
-                    _context.OrderItems.Add(item);
+                    if (item.OrderItemId == 0)
+                    {
+                        // insert new orderItem
+                        _context.OrderItems.Add(item);
+                    }
+                    else
+                    {
+                        // update existing orderItem
+                        _context.Entry(item).State= EntityState.Modified;
+                    }
                 }
+
+                //for deleted records
+                foreach(string id in order.DeletedOrderItems.Split(',').Where(id => id != ""))
+                {
+                    OrderItem item = _context.OrderItems.Find(Convert.ToInt64(id));
+                    _context.OrderItems.Remove(item);
+                }
+                
 
                 await _context.SaveChangesAsync();
 
@@ -121,20 +164,24 @@ namespace RestaurantWebApp.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteOrder(long id)
         {
-            if (_context.Orders == null)
+            try
             {
-                return NotFound();
+                var order = await _context.Orders.FindAsync(id);
+                var orderItem = _context.OrderItems.Where(item => item.OrderId == id).ToList();
+                foreach(var items in orderItem)
+                {
+                    _context.OrderItems.Remove(items);
+                }
+
+                _context.Orders.Remove(order);
+
+                await _context.SaveChangesAsync();
+                return Ok();
             }
-            var order = await _context.Orders.FindAsync(id);
-            if (order == null)
+            catch(Exception ex)
             {
-                return NotFound();
+                return BadRequest(ex);
             }
-
-            _context.Orders.Remove(order);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
         }
 
         private bool OrderExists(long id)
